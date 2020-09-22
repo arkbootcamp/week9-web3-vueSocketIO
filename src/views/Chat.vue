@@ -13,13 +13,14 @@
       </b-col>
       <b-col cols="10"
         ><div class="chat">
-          <!-- <h2>Chat App</h2> -->
           <div class="chat-window">
             <div class="output">
               <p v-if="typing">
                 <em>{{ typing }} is typing a message...</em>
               </p>
-              <p><strong>Budi : </strong>Hai Semua</p>
+              <p v-for="(value, index) in messages" :key="index">
+                <strong>{{ value.username }} : </strong>{{ value.message }}
+              </p>
             </div>
           </div>
           <input
@@ -28,7 +29,7 @@
             v-model="message"
             placeholder="Message"
           />
-          <button class="send">Send</button>
+          <button class="send" @click="sendMessage">Send</button>
         </div></b-col
       >
     </b-row>
@@ -36,11 +37,71 @@
 </template>
 
 <script>
+import io from 'socket.io-client'
+
 export default {
   name: 'Chat',
   data() {
     return {
-      message: ''
+      socket: io('http://localhost:3000'),
+      username: '',
+      room: '',
+      message: '',
+      messages: [],
+      typing: false // false || 'nama si pengetik'
+    }
+  },
+  watch: {
+    message(value) {
+      value
+        ? this.socket.emit('typing', this.username)
+        : this.socket.emit('typing', false)
+    }
+  },
+  mounted() {
+    // console.log(this.$route.params)
+    if (!this.$route.params.username) {
+      this.$router.push('/about')
+    }
+    // proses get message axios
+    // this.getchat()
+    this.username = this.$route.params.username
+    this.room = this.$route.params.room
+    // this.socket.emit('welcomeMessage', {
+    //   username: 'BOT',
+    //   message: `Welcome Back ${this.username} !`
+    // })
+    this.socket.emit('welcomeMessage', {
+      username: this.username,
+      room: this.room
+    })
+    this.socket.on('chatMessage', data => {
+      this.messages.push(data)
+    })
+    this.socket.on('typingMessage', data => {
+      this.typing = data
+    })
+  },
+  methods: {
+    sendMessage() {
+      // const setData = {
+      //   username: this.username,
+      //   message: this.message
+      // }
+      // GLOBAL = semua orang dapat melihat
+      // PRIVATE = hanya kita saja yang dapat melihat
+      // BRROADCAST = semua orang dapat melihat kecuali kita
+      // this.socket.emit('globalMessage', setData)
+      // this.socket.emit('privateMessage', setData)
+      // this.socket.emit('broadcastMessage', setData)
+      // =========================================================
+      const setData = {
+        username: this.username,
+        message: this.message,
+        room: this.room
+      }
+      this.socket.emit('roomMessage', setData)
+      this.message = ''
     }
   }
 }

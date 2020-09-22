@@ -13,7 +13,7 @@ Vue.use(IconsPlugin)
 Vue.config.productionTip = false
 Vue.use(VueGoogleMaps, {
   load: {
-    key: 'AIzaSyAQRcFmrBSQOm63BAf0_mrtuCnkCN-wPqw',
+    key: 'YOUR_KEY',
     libraries: 'places'
   }
 })

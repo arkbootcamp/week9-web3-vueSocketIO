@@ -32,6 +32,7 @@ export default {
   created() {
     this.$getLocation()
       .then(coordinates => {
+        console.log(coordinates)
         this.coordinate = {
           lat: coordinates.lat,
           lng: coordinates.lng

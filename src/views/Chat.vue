@@ -1,5 +1,13 @@
 <template>
   <b-container class="bv-example-row">
+    <b-form-group>
+      <b-form-select class="mb-3" v-model="room" @change="selectRoom">
+        <b-form-select-option :value="null">Please select Room</b-form-select-option>
+        <b-form-select-option value="html">HTML</b-form-select-option>
+        <b-form-select-option value="css">CSS</b-form-select-option>
+        <b-form-select-option value="js">JS</b-form-select-option>
+      </b-form-select>
+    </b-form-group>
     <b-row>
       <b-col cols="2">
         <div class="chat">
@@ -11,27 +19,23 @@
           </div>
         </div>
       </b-col>
-      <b-col cols="10"
-        ><div class="chat">
+      <b-col cols="10">
+        <div class="chat">
           <div class="chat-window">
             <div class="output">
               <p v-if="typing">
                 <em>{{ typing }} is typing a message...</em>
               </p>
               <p v-for="(value, index) in messages" :key="index">
-                <strong>{{ value.username }} : </strong>{{ value.message }}
+                <strong>{{ value.username }} :</strong>
+                {{ value.message }}
               </p>
             </div>
           </div>
-          <input
-            class="message"
-            type="text"
-            v-model="message"
-            placeholder="Message"
-          />
+          <input class="message" type="text" v-model="message" placeholder="Message" />
           <button class="send" @click="sendMessage">Send</button>
-        </div></b-col
-      >
+        </div>
+      </b-col>
     </b-row>
   </b-container>
 </template>
@@ -46,6 +50,7 @@ export default {
       socket: io('http://localhost:3000'),
       username: '',
       room: '',
+      oldRoom: '',
       message: '',
       messages: [],
       typing: false // false || 'nama si pengetik'
@@ -66,15 +71,12 @@ export default {
     // proses get message axios
     // this.getchat()
     this.username = this.$route.params.username
-    this.room = this.$route.params.room
+    // this.room = this.$route.params.room
     // this.socket.emit('welcomeMessage', {
     //   username: 'BOT',
     //   message: `Welcome Back ${this.username} !`
     // })
-    this.socket.emit('welcomeMessage', {
-      username: this.username,
-      room: this.room
-    })
+    
     this.socket.on('chatMessage', data => {
       this.messages.push(data)
     })
@@ -100,8 +102,27 @@ export default {
         message: this.message,
         room: this.room
       }
+      // [1] menjalankan scoket io untuk mendapatkan realtimenya
       this.socket.emit('roomMessage', setData)
+      // [2] menjalankan proses axios post data message untuk menyimpan data ke dalam database
+      // ........
       this.message = ''
+    },
+    selectRoom(data) {
+      if (this.oldRoom) {
+        // console.log('sudah pernah klik room ' + this.oldRoom);
+        // console.log('dan akan masuk ke room ' + data);
+        this.socket.emit('changeRoom', { oldRoom: this.oldRoom, newRoom: data} )
+        this.oldRoom = data
+      } else {
+        // console.log('belum pernah klik room');
+        // console.log('dan akan masuk ke room ' + data);
+        this.socket.emit('welcomeMessage', {
+          username: this.username,
+          room: this.room
+        })
+        this.oldRoom = data
+      }
     }
   }
 }

@@ -40,7 +40,7 @@
           ></b-form-input>
         </b-form-group>
 
-        <b-form-group
+        <!-- <b-form-group
           id="input-group-3"
           label="Select Room:"
           label-for="input-3"
@@ -53,7 +53,7 @@
             <b-form-select-option value="css">CSS</b-form-select-option>
             <b-form-select-option value="js">JS</b-form-select-option>
           </b-form-select>
-        </b-form-group>
+        </b-form-group> -->
 
         <b-button type="reset" variant="danger">Reset</b-button>
         <b-button type="submit" variant="primary">Submit</b-button>
@@ -70,7 +70,7 @@ export default {
       username: '',
       email: '',
       password: '',
-      room: null
+      // room: null
     }
   }),
   methods: {
@@ -87,7 +87,7 @@ export default {
         username: '',
         email: '',
         password: '',
-        room: null
+        // room: null
       }
     }
   }

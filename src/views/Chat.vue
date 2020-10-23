@@ -47,7 +47,7 @@ export default {
   name: 'Chat',
   data() {
     return {
-      socket: io('http://localhost:3000'),
+      socket: io('https://backend-web3.fwdev.online'),
       username: '',
       room: '',
       oldRoom: '',
